@@ -3,19 +3,28 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Student;
 
-class studentController extends Controller
+use App\Tag;
+
+use Session;
+
+class tagsController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
+    public function __construct()
+    {
+    	$this->middleware('auth');
+    }
+
     public function index()
     {
-        $students=Student::all()->toarray();
-        return view('student.index',compact('students'));
+        //
+        $tags = Tag::all();
+        return view('tags.index',compact('tags'));
     }
 
     /**
@@ -25,7 +34,7 @@ class studentController extends Controller
      */
     public function create()
     {
-        return view('student.create');
+        //
     }
 
     /**
@@ -36,16 +45,17 @@ class studentController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request,[
-          'firstname'=>'required',
-          'lastname'=>'required'
-        ]);
-        $student=new Student([
-          'firstname'=>$request->get('firstname'),
-          'lastname'=>$request->get('lastname')
-        ]);
-        $student->save();
-        return redirect()->route('student.index')->with('success','Data Added');
+        //
+        $this->validate($request, array(
+        	'name' => 'required|max:255',
+        ));
+
+        $tag = new Tag;
+        $tag->name = $request->name;
+        $tag->save();
+
+        Session::flash('success', 'New tag successfully created!');
+        return redirect()->route('tags.index');
     }
 
     /**
@@ -57,6 +67,8 @@ class studentController extends Controller
     public function show($id)
     {
         //
+        $tag = Tag::find($id);
+        return view('tags.show')->withTag($tag);
     }
 
     /**
@@ -67,8 +79,9 @@ class studentController extends Controller
      */
     public function edit($id)
     {
-      $student=Student::find($id);
-      return view('student.edit',compact('student','id'));
+        //
+        $tag = Tag::find($id);
+        return view('tags.edit')->withTag($tag);
     }
 
     /**
@@ -80,15 +93,17 @@ class studentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request,[
-          'firstname'=>'required',
-          'lastname'=>'required'
-        ]);
-        $student=Student::find($id);
-        $student->firstname=$request->get('firstname');
-        $student->lastname=$request->get('lastname');
-        $student->save();
-        return redirect()->route('student.index')->with('success','Data Updated');
+        //
+        $tag = Tag::find($id);
+        
+        $this->validate($request, ['name' => 'required|max:255',]);
+
+        $tag->name = $request->name;
+        $tag->save();
+
+        Session::flash('success', 'location successfully edited');
+
+        return redirect()->route('tags.show', $tag->id);
     }
 
     /**
@@ -99,8 +114,14 @@ class studentController extends Controller
      */
     public function destroy($id)
     {
-        $student=Student::find($id);
-        $student->delete();
-        return redirect()->route('student.index')->with('success','Data Deleted');
+        //
+        $tag = Tag::find($id);
+        $tag->cars()->detach();
+
+        $tag->delete();
+
+        Session::flash('success', 'location deleted!');
+
+        return redirect()->route('tags.index');
     }
 }

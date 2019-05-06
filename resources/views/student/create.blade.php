@@ -1,6 +1,6 @@
 @extends('layout.master')
 @section('content')
-<h1>Student Details</h1>
+<h1>Add data</h1>
 @if(count($errors)>0)
 <ul>
   @foreach($errors->all as $error)
@@ -18,9 +18,8 @@
 @endif
 <form action="{{url('student')}}" method="post">
   {{csrf_field()}}
-  First Name: <input type="text" name="name" placeholder="Enter Name" required>
-  Enter Course: <input type="text" name="course" placeholder="Enter Course Name" required>
-  Enter E-mail: <input type="email" name="email" placeholder="Enter E-mail" required><br><br>
-  <input type="submit" value="Enter" class="btn btn-primary">
+  First Name: <input type="text" name="firstname" placeholder="Enter first name"><br><br>
+  Last Name: <input type="text" name="lastname" placeholder="Enter last name"><br><br>
+  <input type="submit" value="Submit" class="btn btn-primary">
 </form>
 @endsection
